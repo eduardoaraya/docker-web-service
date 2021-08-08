@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+  php:
+    build:
+      dockerfile: php/php.Dockerfile
+      context: .
+    volumes:
+      - ./src/backend:/var/www/backend/
+    depends_on:
+      - db
+    networks:
+      - backend
+    ports:
+      - 9000:9000
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=5678465
+      - POSTGRES_DATABASE=total
+      - POSTGRES_USERNAME=788889
+    networks:
+      - backend
+    ports:
+      - 5534:5534
+  web:
+    image: nginx:latest
+    volumes:
+      - ./src/backend/:/var/www/backend/
+      - ./nginx/config/:/etc/nginx/conf.d/
+      - ./nginx/snippets/:/etc/nginx/snippets/
+    depends_on: 
+      - php
+    networks:
+      - backend
+    ports:
+      - 80:80
+networks:
+  backend:
+    driver: bridge
